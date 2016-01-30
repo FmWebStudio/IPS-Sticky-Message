@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin name="Sticky Message" version_long="10000" version_human="1.0.0" author="Fm Web (Recouse)" website="http://fm-web.studio" update_check=""><hooks><hook type="S" class="\IPS\Theme\class_core_front_global" filename="fmwHook_stickyMessage"><![CDATA[//<?php
+
+class hook33 extends _HOOK_CLASS_
+{
+
+/* !Hook Data - DO NOT REMOVE */
+public static function hookData() {
+ return array_merge_recursive( array (
+  'globalTemplate' => 
+  array (
+    0 => 
+    array (
+      'selector' => '#ipsLayout_footer',
+      'type' => 'add_after',
+      'content' => '{template="stickyMessage" group="plugins" location="global" app="core"}',
+    ),
+  ),
+), parent::hookData() );
+}
+/* End Hook Data */
+
+
+
+
+
+
+
+
+}]]></hook></hooks><settings><setting><key>fmwStickyMessage_messageText</key><default/></setting><setting><key>fmwStickyMessage_groups</key><default/></setting><setting><key>fmwStickyMessage_type</key><default>information</default></setting><setting><key>fmwStickyMessage_color</key><default>5E707D</default></setting><setting><key>fmwStickyMessage_opacity</key><default>0.5</default></setting><setting><key>fmwStickyMessage_position</key><default>right</default></setting><setting><key>fmwStickyMessage_marginRight</key><default>20</default></setting><setting><key>fmwStickyMessage_marginLeft</key><default>20</default></setting><setting><key>fmwStickyMessage_marginBottom</key><default>20</default></setting><setting><key>fmwStickyMessage_enableColor</key><default>0</default></setting><setting><key>fmwStickyMessage_textColor</key><default>FFFFFF</default></setting></settings><settingsCode><![CDATA[//<?php
+
+$form->addTab('fmwStickyMessage_general');
+// Translatable message
+$form->add( new \IPS\Helpers\Form\Translatable( 'fmwStickyMessage_messageText', NULL, TRUE, array( 'app' => 'core', 'key' => 'fmwStickyMessage_messageTextTranslate', 'editor' => array( 'app' => 'core', 'key' => 'Admin', 'autoSaveKey' => 'fmwStickyMessage_messageText', 'minimize' => 'fmwStickyMessage_messagePlaceholder' ) ) ) );
+// Groups
+$form->add( new \IPS\Helpers\Form\Select( 'fmwStickyMessage_groups', \IPS\Settings::i()->fmwStickyMessage_groups == '*' ? "*" : explode( ',', \IPS\Settings::i()->fmwStickyMessage_groups ), FALSE, array( 'options' => \IPS\Member\Group::groups( TRUE, FALSE ), 'parse' => 'normal', 'multiple' => true, 'unlimited' => '*', 'unlimitedLang' => 'all_groups' ), NULL, NULL, NULL, 'fmwStickyMessage_groups' ) );
+
+
+$form->addTab('fmwStickyMessage_styles');
+$form->addHeader('fmwStickyMessage_hStyles');
+// Message type
+$form->add( new \IPS\Helpers\Form\Select( 'fmwStickyMessage_type', \IPS\Settings::i()->fmwStickyMessage_type, FALSE, array( 'options' => array( 'information' => 'fmwStickyMessage_messageTypeInformation', 'success' => 'fmwStickyMessage_messageTypeSuccess', 'warning' => 'fmwStickyMessage_messageTypeWarning', 'error' => 'fmwStickyMessage_messageTypeError' ) ) ) );
+// Custom style
+$form->add( new \IPS\Helpers\Form\YesNo( 'fmwStickyMessage_enableColor', \IPS\Settings::i()->fmwStickyMessage_enableColor, FALSE, array( 'togglesOn' => array( 'fmwStickyMessage_color', 'fmwStickyMessage_textColor' ) ) ) );
+$form->add( new \IPS\Helpers\Form\Color( 'fmwStickyMessage_color', \IPS\Settings::i()->fmwStickyMessage_color, FALSE, array(), NULL, NULL, NULL, 'fmwStickyMessage_color' ) );
+$form->add( new \IPS\Helpers\Form\Color( 'fmwStickyMessage_textColor', \IPS\Settings::i()->fmwStickyMessage_textColor, FALSE, array(), NULL, NULL, NULL, 'fmwStickyMessage_textColor' ) );
+// Opacity
+$form->add( new \IPS\Helpers\Form\Text( 'fmwStickyMessage_opacity', \IPS\Settings::i()->fmwStickyMessage_opacity, FALSE, array( 'minLength' => 1,	'maxLength' => 3 ), function( $val )
+{
+	if ( $val <= 0 || $val >= 1 )
+	{
+		throw new \DomainException('form_bad_value');
+	}
+} ) );
+$form->addHeader('fmwStickyMessage_fPosition');
+// Message position
+$form->add( new \IPS\Helpers\Form\Select( 'fmwStickyMessage_position', \IPS\Settings::i()->fmwStickyMessage_position, FALSE, array( 'options' => array( 'left' => 'fmwStickyMessage_positionLeft', 'right' => 'fmwStickyMessage_positionRight' ) ) ) );
+// Margins
+$form->add( new \IPS\Helpers\Form\Number( 'fmwStickyMessage_marginLeft', \IPS\Settings::i()->fmwStickyMessage_marginLeft, FALSE, array( 'maxLength' => 3 ) ) );
+$form->add( new \IPS\Helpers\Form\Number( 'fmwStickyMessage_marginRight', \IPS\Settings::i()->fmwStickyMessage_marginRight, FALSE, array( 'maxLength' => 3 ) ) );
+$form->add( new \IPS\Helpers\Form\Number( 'fmwStickyMessage_marginBottom', \IPS\Settings::i()->fmwStickyMessage_marginBottom, FALSE, array( 'maxLength' => 3 ) ) );
+
+if ( $values = $form->values() )
+{
+	$form->saveAsSettings();
+	\IPS\Lang::saveCustom( 'core', 'fmwStickyMessage_messageTextTranslate', $values['fmwStickyMessage_messageText'] );
+	return TRUE;
+}
+
+return $form;]]></settingsCode><tasks/><htmlFiles><html filename="stickyMessage.phtml">PGlwczp0ZW1wbGF0ZSBwYXJhbWV0ZXJzPSIiIC8+DQp7e2lmIGluX2FycmF5KCBtZW1iZXIubWVtYmVyX2dyb3VwX2lkLCBleHBsb2RlKCAnLCcsIHNldHRpbmdzLmZtd1N0aWNreU1lc3NhZ2VfZ3JvdXBzICkgKSB8fCBzZXR0aW5ncy5mbXdTdGlja3lNZXNzYWdlX2dyb3VwcyA9PSAiKiJ9fQ0KCXt7aWYgc2V0dGluZ3MuZm13U3RpY2t5TWVzc2FnZV9tZXNzYWdlVGV4dCB9fQ0KCQk8ZGl2IGNsYXNzPSJpcHNNZXNzYWdlIGlwc01lc3NhZ2Vfe3NldHRpbmc9ImZtd1N0aWNreU1lc3NhZ2VfdHlwZSJ9IGlwc01lc3NhZ2Vfc3RpY2t5IiBzdHlsZT0ib3BhY2l0eToge3NldHRpbmc9ImZtd1N0aWNreU1lc3NhZ2Vfb3BhY2l0eSJ9O3t7aWYgc2V0dGluZ3MuZm13U3RpY2t5TWVzc2FnZV9lbmFibGVDb2xvcn19YmFja2dyb3VuZC1jb2xvcjoge3NldHRpbmc9ImZtd1N0aWNreU1lc3NhZ2VfY29sb3IifTtjb2xvcjoge3NldHRpbmc9ImZtd1N0aWNreU1lc3NhZ2VfdGV4dENvbG9yIn07e3tlbmRpZn19e3tpZiBzZXR0aW5ncy5mbXdTdGlja3lNZXNzYWdlX3Bvc2l0aW9uID09ICJsZWZ0In19bGVmdDoge3NldHRpbmc9ImZtd1N0aWNreU1lc3NhZ2VfbWFyZ2luTGVmdCJ9cHg7e3tlbHNlaWYgIHNldHRpbmdzLmZtd1N0aWNreU1lc3NhZ2VfcG9zaXRpb24gPT0gInJpZ2h0In19cmlnaHQ6IHtzZXR0aW5nPSJmbXdTdGlja3lNZXNzYWdlX21hcmdpblJpZ2h0In1weDt7e2VuZGlmfX1ib3R0b206IHtzZXR0aW5nPSJmbXdTdGlja3lNZXNzYWdlX21hcmdpbkJvdHRvbSJ9cHg7Ij4NCgkJCXtsYW5nPSJmbXdTdGlja3lNZXNzYWdlX21lc3NhZ2VUZXh0VHJhbnNsYXRlIn0NCgkJPC9kaXY+DQoJe3tlbmRpZn19DQp7e2VuZGlmfX0=</html></htmlFiles><cssFiles><css filename="stickyMessage.css">Lmlwc01lc3NhZ2UuaXBzTWVzc2FnZV9zdGlja3kgew0KCXBhZGRpbmc6IDE1cHg7DQoJbWF4LXdpZHRoOiAyNTBweDsNCglib3gtc2hhZG93OiAwcHggM3B4IDZweCByZ2JhKDAsIDAsIDAsIDAuMTYpLCAwcHggM3B4IDZweCByZ2JhKDAsIDAsIDAsIDAuMjMpOw0KCXRyYW5zaXRpb246IGFsbCAuM3MgZWFzZS1pbi1vdXQ7DQoJcG9zaXRpb246IGZpeGVkOw0KCXotaW5kZXg6IDk5OTk7DQp9DQoNCgkuaXBzTWVzc2FnZS5pcHNNZXNzYWdlX3N0aWNreTpob3ZlciB7DQoJCW9wYWNpdHk6IDEgIWltcG9ydGFudDsNCgl9DQoNCi5pcHNNZXNzYWdlLmlwc01lc3NhZ2Vfc3RpY2t5OmJlZm9yZSB7DQoJZGlzcGxheTogbm9uZTsNCn0NCg0KLmlwc01lc3NhZ2UuaXBzTWVzc2FnZV9zdGlja3kgcCB7DQoJbWFyZ2luOiAwOw0KfQ0KDQpAbWVkaWEgYWxsIGFuZCAobWluLXdpZHRoOiAzMjBweCkgYW5kIChtYXgtd2lkdGg6IDc4MHB4KSB7DQoJLmlwc01lc3NhZ2UuaXBzTWVzc2FnZV9zdGlja3kgew0KCQltYXgtd2lkdGg6IDEwMCU7DQoJCXJpZ2h0OiAxMHB4Ow0KCQlsZWZ0OiAxMHB4Ow0KCX0NCn0=</css></cssFiles><jsFiles/><resourcesFiles/><lang><word key="fmwStickyMessage_general" js="0">General</word><word key="fmwStickyMessage_styles" js="0">Styles</word><word key="fmwStickyMessage_messageText" js="0">Message text</word><word key="fmwStickyMessage_messagePlaceholder" js="0">Type your message here</word><word key="fmwStickyMessage_messageTextTranslate" js="0"/><word key="fmwStickyMessage_groups" js="0">Who can see?</word><word key="fmwStickyMessage_type" js="0">Message type</word><word key="fmwStickyMessage_messageTypeInformation" js="0">Information</word><word key="fmwStickyMessage_messageTypeSuccess" js="0">Success</word><word key="fmwStickyMessage_messageTypeWarning" js="0">Warning</word><word key="fmwStickyMessage_messageTypeError" js="0">Error</word><word key="fmwStickyMessage_enableColor" js="0">Enable custom background?</word><word key="fmwStickyMessage_color" js="0">Choose background color</word><word key="fmwStickyMessage_color_desc" js="0">Apply when you enabled custom background</word><word key="fmwStickyMessage_textColor" js="0">Choose text color</word><word key="fmwStickyMessage_textColor_desc" js="0">Apply when you enabled custom background</word><word key="fmwStickyMessage_opacity" js="0">Message opacity</word><word key="fmwStickyMessage_hStyles" js="0">Message customization</word><word key="fmwStickyMessage_fPosition" js="0">Message position</word><word key="fmwStickyMessage_position" js="0">Position</word><word key="fmwStickyMessage_positionLeft" js="0">Left</word><word key="fmwStickyMessage_positionRight" js="0">Right</word><word key="fmwStickyMessage_marginLeft" js="0">Margin left</word><word key="fmwStickyMessage_marginLeft_desc" js="0">in pixels (px)</word><word key="fmwStickyMessage_marginRight" js="0">Margin right</word><word key="fmwStickyMessage_marginRight_desc" js="0">in pixels (px)</word><word key="fmwStickyMessage_marginBottom" js="0">Margin bottom</word><word key="fmwStickyMessage_marginBottom_desc" js="0">in pixels (px)</word></lang><versions><version long="10000" human="1.0.0"><![CDATA[//<?php
+
+
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+	exit;
+}
+
+/**
+ * Install Code
+ */
+class ips_plugins_setup_install
+{
+	/**
+	 * ...
+	 *
+	 * @return	array	If returns TRUE, upgrader will proceed to next step. If it returns any other value, it will set this as the value of the 'extra' GET parameter and rerun this step (useful for loops)
+	 */
+	public function step1()
+	{
+		
+
+		return TRUE;
+	}
+	
+	// You can create as many additional methods (step2, step3, etc.) as is necessary.
+	// Each step will be executed in a new HTTP request
+}]]></version></versions></plugin>
