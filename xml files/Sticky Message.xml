@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin name="Sticky Message" version_long="10000" version_human="1.0.0" author="Fm Web (Recouse)" website="http://fm-web.studio" update_check=""><hooks><hook type="S" class="\IPS\Theme\class_core_front_global" filename="fmwHook_stickyMessage"><![CDATA[//<?php
+<plugin name="Sticky Message" version_long="10001" version_human="1.0.0" author="Fm Web (Recouse)" website="http://fm-web.studio" update_check=""><hooks><hook type="S" class="\IPS\Theme\class_core_front_global" filename="fmwHook_stickyMessage"><![CDATA[//<?php
 
 class hook33 extends _HOOK_CLASS_
 {
@@ -33,7 +33,7 @@ $form->addTab('fmwStickyMessage_general');
 // Translatable message
 $form->add( new \IPS\Helpers\Form\Translatable( 'fmwStickyMessage_messageText', NULL, TRUE, array( 'app' => 'core', 'key' => 'fmwStickyMessage_messageTextTranslate', 'editor' => array( 'app' => 'core', 'key' => 'Admin', 'autoSaveKey' => 'fmwStickyMessage_messageText', 'minimize' => 'fmwStickyMessage_messagePlaceholder' ) ) ) );
 // Groups
-$form->add( new \IPS\Helpers\Form\Select( 'fmwStickyMessage_groups', \IPS\Settings::i()->fmwStickyMessage_groups == '*' ? "*" : explode( ',', \IPS\Settings::i()->fmwStickyMessage_groups ), FALSE, array( 'options' => \IPS\Member\Group::groups( TRUE, FALSE ), 'parse' => 'normal', 'multiple' => true, 'unlimited' => '*', 'unlimitedLang' => 'all_groups' ), NULL, NULL, NULL, 'fmwStickyMessage_groups' ) );
+$form->add( new \IPS\Helpers\Form\Select( 'fmwStickyMessage_groups', \IPS\Settings::i()->fmwStickyMessage_groups == '*' ? "*" : explode( ',', \IPS\Settings::i()->fmwStickyMessage_groups ), FALSE, array( 'options' => \IPS\Member\Group::groups( TRUE, TRUE ), 'parse' => 'normal', 'multiple' => true, 'unlimited' => '*', 'unlimitedLang' => 'all_groups' ), NULL, NULL, NULL, 'fmwStickyMessage_groups' ) );
 
 
 $form->addTab('fmwStickyMessage_styles');
@@ -56,9 +56,27 @@ $form->addHeader('fmwStickyMessage_fPosition');
 // Message position
 $form->add( new \IPS\Helpers\Form\Select( 'fmwStickyMessage_position', \IPS\Settings::i()->fmwStickyMessage_position, FALSE, array( 'options' => array( 'left' => 'fmwStickyMessage_positionLeft', 'right' => 'fmwStickyMessage_positionRight' ) ) ) );
 // Margins
-$form->add( new \IPS\Helpers\Form\Number( 'fmwStickyMessage_marginLeft', \IPS\Settings::i()->fmwStickyMessage_marginLeft, FALSE, array( 'maxLength' => 3 ) ) );
-$form->add( new \IPS\Helpers\Form\Number( 'fmwStickyMessage_marginRight', \IPS\Settings::i()->fmwStickyMessage_marginRight, FALSE, array( 'maxLength' => 3 ) ) );
-$form->add( new \IPS\Helpers\Form\Number( 'fmwStickyMessage_marginBottom', \IPS\Settings::i()->fmwStickyMessage_marginBottom, FALSE, array( 'maxLength' => 3 ) ) );
+$form->add( new \IPS\Helpers\Form\Number( 'fmwStickyMessage_marginLeft', \IPS\Settings::i()->fmwStickyMessage_marginLeft, FALSE, array(), function( $val )
+{
+	if ( strlen($val) > 3 )
+	{
+		throw new \DomainException('form_bad_value');
+	}
+} ) );
+$form->add( new \IPS\Helpers\Form\Number( 'fmwStickyMessage_marginRight', \IPS\Settings::i()->fmwStickyMessage_marginRight, FALSE, array(), function( $val )
+{
+	if ( strlen($val) > 3 )
+	{
+		throw new \DomainException('form_bad_value');
+	}
+} ) );
+$form->add( new \IPS\Helpers\Form\Number( 'fmwStickyMessage_marginBottom', \IPS\Settings::i()->fmwStickyMessage_marginBottom, FALSE, array(), function( $val )
+{
+	if ( strlen($val) > 3 )
+	{
+		throw new \DomainException('form_bad_value');
+	}
+} ) );
 
 if ( $values = $form->values() )
 {
@@ -81,6 +99,35 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
  * Install Code
  */
 class ips_plugins_setup_install
+{
+	/**
+	 * ...
+	 *
+	 * @return	array	If returns TRUE, upgrader will proceed to next step. If it returns any other value, it will set this as the value of the 'extra' GET parameter and rerun this step (useful for loops)
+	 */
+	public function step1()
+	{
+		
+
+		return TRUE;
+	}
+	
+	// You can create as many additional methods (step2, step3, etc.) as is necessary.
+	// Each step will be executed in a new HTTP request
+}]]></version><version long="10001" human="1.0.0"><![CDATA[//<?php
+
+
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+	exit;
+}
+
+/**
+ * 1.0.0 Upgrade Code
+ */
+class ips_plugins_setup_upg_10001
 {
 	/**
 	 * ...
